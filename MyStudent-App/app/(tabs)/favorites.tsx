@@ -1,8 +1,8 @@
 // app/(tabs)/favorites.tsx
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { getFavorites } from '@/services/storage';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { getFavorites } from '@/service/storage'; 
+import React, { useState } from 'react';
+import { FlatList, StyleSheet, Text, Button, TouchableOpacity, View } from 'react-native';
 
 
 interface Post {
@@ -37,7 +37,7 @@ export default function FavoritesScreen() {
           <TouchableOpacity 
             style={styles.item}
             onPress={() => router.push({
-              pathname: '/detail/id',
+              pathname: '/detail/[id]',
               params: { id: item.id.toString() }
 })}
           >

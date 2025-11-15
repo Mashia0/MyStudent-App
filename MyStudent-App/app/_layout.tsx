@@ -15,7 +15,7 @@ Notifications.setNotificationHandler({
     shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowBanner: false, 
-    shouldShowList: false,  
+    shouldShowList: false,   
   }),
 });
 
@@ -71,7 +71,7 @@ const InitialLayout = () => {
 
     if (userToken && inAuthGroup) {
       
-      router.replace('/tabs'); 
+      router.replace('/(tabs)/index');
     } else if (!userToken && !inAuthGroup) {
       // Pengguna belum login dan tidak di grup auth, arahkan ke login
       router.replace('/auth/login'); 

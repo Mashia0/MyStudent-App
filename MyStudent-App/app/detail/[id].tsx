@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { saveFavorite } from '../../service/storage'; // Kita akan buat ini
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { saveFavorite } from '../../services/storage'; // Kita akan buat ini
 
 // Tipe data untuk item
 interface Post {

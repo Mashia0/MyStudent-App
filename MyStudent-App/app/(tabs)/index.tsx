@@ -41,7 +41,7 @@ export default function HomeScreen() {
       style={styles.item}
       // (Tugas #14) Navigasi ke detail dengan [id]
       onPress={() => router.push({
-        pathname: "/detail/id",
+        pathname: "/detail/[id]",
         params: { id: item.id.toString() } 
 })}
     >
