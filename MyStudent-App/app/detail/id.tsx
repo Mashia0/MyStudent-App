@@ -12,7 +12,9 @@ interface Post {
 }
 
 export default function DetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+ // BENAR
+const params = useLocalSearchParams();
+const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [itemData, setItemData] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
 

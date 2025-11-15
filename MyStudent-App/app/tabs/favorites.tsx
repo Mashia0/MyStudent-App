@@ -4,6 +4,7 @@ import { View, Text, FlatList, StyleSheet, Button, TouchableOpacity } from 'reac
 import { useFocusEffect, useRouter } from 'expo-router';
 import { getFavorites } from '@/service/storage'; 
 
+
 interface Post {
   userId: number;
   id: number;
