@@ -1,94 +1,88 @@
-// app/_layout.tsx
-import React, { useEffect, useState } from 'react'; // <-- Impor useState
-import { Stack, useRouter, useSegments } from 'expo-router';
-import { AuthProvider, useAuth } from '../context/AuthContext';
 import * as Notifications from 'expo-notifications';
-import { SplashScreen } from 'expo-router'; // <-- Impor SplashScreen
+import { SplashScreen, Stack, useRouter, useSegments } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 
-// Mencegah splash screen tersembunyi otomatis
-SplashScreen.preventAutoHideAsync(); // <-- Tambahkan ini
-
+SplashScreen.preventAutoHideAsync();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
-    shouldShowBanner: false, 
-    shouldShowList: false,   
+    shouldShowBanner: false,
+    shouldShowList: false,
   }),
 });
 
 async function registerForPushNotificationsAsync() {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
+
   if (existingStatus !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
   }
+
   if (finalStatus !== 'granted') {
-    alert('Gagal mendapatkan izin notifikasi!');
-    return;
+    alert('We were unable to enable push notifications. You can update this in system settings anytime.');
   }
 }
-
 
 const InitialLayout = () => {
   const { userToken } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-  
-  // State untuk melacak apakah aplikasi siap
-  const [appReady, setAppReady] = useState(false); // <-- Tambahkan state ini
+  const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
-    // Minta izin notifikasi
     registerForPushNotificationsAsync();
 
-    async function prepareApp() {
+    const prepareApp = async () => {
       try {
-        // Lakukan tugas async apa pun di sini (misal: memuat font, data)
-        // Karena kita tidak menunggu apa-apa, kita bisa langsung lanjut
-      } catch (e) {
-        console.warn(e);
+        // siapkan resource lain jika diperlukan
+      } catch (error) {
+        console.warn(error);
       } finally {
-        // Tandai aplikasi sebagai siap dan sembunyikan splash screen
-        setAppReady(true); // <-- Atur aplikasi sebagai siap
-        SplashScreen.hideAsync(); // <-- Sembunyikan splash screen
+        setAppReady(true);
+        SplashScreen.hideAsync();
       }
-    }
+    };
 
     prepareApp();
-  }, []); // <-- Efek ini hanya berjalan sekali
+  }, []);
 
   useEffect(() => {
-    // Navigasi HANYA JIKA aplikasi sudah siap
     if (!appReady) {
-      return; // <-- Jangan lakukan apa-apa jika app belum siap
+      return;
     }
 
-    const inAuthGroup = segments[0] === 'auth';
+    const firstSegment = segments[0] as string | undefined;
+    const inAuthGroup =
+      firstSegment === 'login' || firstSegment === 'signup' || firstSegment === '(auth)';
+    const inProtectedGroup =
+      firstSegment === '(tabs)' ||
+      firstSegment === 'explore' ||
+      firstSegment === 'favorites' ||
+      firstSegment === 'settings' ||
+      firstSegment === 'detail';
 
     if (userToken && inAuthGroup) {
-      
-      router.replace('/(tabs)/index');
-    } else if (!userToken && !inAuthGroup) {
-      // Pengguna belum login dan tidak di grup auth, arahkan ke login
-      router.replace('/auth/login'); 
+      router.replace('/(tabs)');
+    } else if (!userToken && inProtectedGroup) {
+      router.replace('/(auth)/login');
     }
   }, [userToken, segments, router, appReady]);
 
-  // Jangan render apapun sampai aplikasi siap, ini mencegah error
   if (!appReady) {
     return null;
   }
 
-  // Setelah siap, render navigator
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="auth" />
-      <Stack.Screen name="tabs" />
-      <Stack.Screen name="detail/id" options={{ headerShown: true, title: 'Detail' }} />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="detail/[id]" options={{ headerShown: true, title: 'Detail' }} />
     </Stack>
   );
 };

@@ -1,11 +1,12 @@
-// context/AuthContext.tsx
 import React, { createContext, useContext, useState } from 'react';
 
-const AuthContext = createContext<{
+type AuthContextValue = {
   signIn: () => void;
   signOut: () => void;
   userToken: string | null;
-}>({
+};
+
+const AuthContext = createContext<AuthContextValue>({
   signIn: () => {},
   signOut: () => {},
   userToken: null,
@@ -18,16 +19,15 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userToken, setUserToken] = useState<string | null>(null);
 
-  const authContext = {
+  const authContext: AuthContextValue = {
     signIn: () => {
-      // Logika login Anda yang sebenarnya akan ada di sini
-      // Untuk saat ini, kita hanya set token palsu
-      setUserToken('dummy-token');
-      console.log('Pengguna masuk');
+      // Replace with your real authentication flow or API call
+      setUserToken('demo-token');
+      console.log('[auth] user signed in');
     },
     signOut: () => {
       setUserToken(null);
-      console.log('Pengguna keluar');
+      console.log('[auth] user signed out');
     },
     userToken,
   };

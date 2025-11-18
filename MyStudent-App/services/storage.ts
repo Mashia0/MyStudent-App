@@ -1,39 +1,40 @@
-// services/storage.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CourseNote } from '../types/note';
 
 const FAVORITES_KEY = '@favorites_list';
 
-// Tipe data untuk item (pastikan sama dengan di layar detail)
-interface Post {
-  userId: number;
-  id: number;
-  title: string;
-  body: string;
-}
-
-export const saveFavorite = async (itemToAdd: Post) => {
+export const saveFavorite = async (itemToAdd: CourseNote) => {
   try {
     const existingFavorites = await getFavorites();
-    const isAlreadyFavorite = existingFavorites.find(item => item.id === itemToAdd.id);
+    const isAlreadyFavorite = existingFavorites.some(item => item.id === itemToAdd.id);
+
     if (!isAlreadyFavorite) {
       const newFavorites = [...existingFavorites, itemToAdd];
-      const jsonValue = JSON.stringify(newFavorites);
-      await AsyncStorage.setItem(FAVORITES_KEY, jsonValue);
-      console.log('Item berhasil disimpan:', jsonValue); // (Untuk Tangkapan Layar Tugas #17)
+      const serialized = JSON.stringify(newFavorites);
+      await AsyncStorage.setItem(FAVORITES_KEY, serialized);
+
+      console.log('-------------------------------------');
+      console.log('⭐ Favorite saved');
+      console.log('Item ID:', itemToAdd.id);
+      console.log('Title  :', itemToAdd.title);
+      console.log('Total favorites:', newFavorites.length);
+      console.log('Payload:', serialized);
+      console.log('-------------------------------------');
     } else {
-      console.log('Item sudah ada di favorit');
+      console.log('ℹ️ Item already stored in favorites (ID:', itemToAdd.id, ')');
     }
-  } catch (e) {
-    console.error('Gagal menyimpan favorit', e);
+  } catch (error) {
+    console.error('Failed to persist favorite item:', error);
+    throw error;
   }
 };
 
-export const getFavorites = async (): Promise<Post[]> => {
+export const getFavorites = async (): Promise<CourseNote[]> => {
   try {
-    const jsonValue = await AsyncStorage.getItem(FAVORITES_KEY);
-    return jsonValue != null ? JSON.parse(jsonValue) : [];
-  } catch (e) {
-    console.error('Gagal mengambil favorit', e);
+    const serialized = await AsyncStorage.getItem(FAVORITES_KEY);
+    return serialized ? JSON.parse(serialized) : [];
+  } catch (error) {
+    console.error('Failed to read favorites from storage:', error);
     return [];
   }
 };

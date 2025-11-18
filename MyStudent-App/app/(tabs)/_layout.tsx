@@ -1,9 +1,10 @@
 // app/(tabs)/_layout.tsx
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons'; // Gunakan ikon bawaan
-import { Colors } from '@/constants/theme'; // Gunakan Colors dari proyek Anda
-import { useColorScheme } from '@/hooks/use-color-scheme'; // Gunakan hook dari proyek Anda
+import { MaterialIcons } from '@expo/vector-icons';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { TouchableOpacity } from 'react-native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme() ?? 'light';
@@ -12,8 +13,14 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+        },
         headerShown: false,
-      }}>
+      }}
+    >
       {/* Layar Beranda (Home) */}
       <Tabs.Screen
         name="index"
@@ -23,12 +30,12 @@ export default function TabLayout() {
         }}
       />
       
-      {/* Layar Favorit (Tugas #18) */}
       <Tabs.Screen
         name="favorites"
         options={{
           title: 'Favorites',
-          headerShown: true, // Tampilkan header untuk layar ini
+          headerShown: true,
+          headerTitle: 'Favorit Saya',
           tabBarIcon: ({ color }) => <MaterialIcons size={28} name="favorite" color={color} />,
         }}
       />
@@ -38,18 +45,17 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
+          headerShown: true,
+          headerTitle: 'Pengaturan',
+          headerRight: () => (
+            <TouchableOpacity style={{ marginRight: 16 }}>
+              <MaterialIcons name="notifications" size={24} color={Colors[colorScheme].tint} />
+            </TouchableOpacity>
+          ),
           tabBarIcon: ({ color }) => <MaterialIcons size={28} name="settings" color={color} />,
         }}
       />
 
-      {/* Hapus atau beri komentar pada layar 'explore' jika tidak diperlukan */}
-      {/* <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      /> */}
     </Tabs>
   );
 }
